@@ -40,7 +40,7 @@ docker compose --profile mainnet up -d
 ```
 
 </details>
-  
+
 <details>
   <summary><b>PREPROD</b></summary>
 
@@ -60,7 +60,7 @@ docker compose --profile preprod up -d
 
 </details>
 
-  
+
 <details>
   <summary><b>PREVIEW</b></summary>
 
@@ -81,6 +81,13 @@ docker compose --profile preview up -d
 </details>
 
 ## Endpoints List
-  
+
 * Kupo — https://cardanosolutions.github.io/kupo/
 * Ogmios — https://ogmios.dev/api/
+
+## Bootstrap a Cardano node using Mithril
+
+[Use guide](https://mithril.network/doc/manual/getting-started/bootstrap-cardano-node/#bootstrap-a-cardano-node-from-a-testnet-mithril-cardano-db-snapshot), or just do:
+
+1. `source ./mithril.sh`
+2. `mithril_client cardano-db download $SNAPSHOT_DIGEST`
