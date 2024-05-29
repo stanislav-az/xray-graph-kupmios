@@ -18,7 +18,7 @@ services:
       CARDANO_NODE_SOCKET_PATH: /ipc/node.socket
 
   kupo-preprod:
-    image: cardanosolutions/kupo:v2.7.2
+    image: cardanosolutions/kupo:v2.5.1
     profiles: ["preprod"]
     logging:
       driver: "json-file"
