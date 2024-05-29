@@ -41,6 +41,21 @@ services:
       - node-ipc-preprod:/ipc
       - ./config/cardano-configurations/network/preprod:/config
 
+  oura-preprod:
+    image: ghcr.io/txpipe/oura:v1.8.5
+    profiles: ["preprod"]
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "400k"
+        max-file: "20"
+    command: [
+      "daemon"
+    ]
+    volumes:
+      - node-ipc-preprod:/tmp
+      - ./daemon.toml:/etc/oura/daemon.toml
+
 volumes:
   node-db-preprod:
   node-ipc-preprod:
