@@ -1,25 +1,70 @@
 name: kupmios
 
 services:
-  haproxy:
-    image: haproxy:2.8.3
-    profiles: ["mainnet", "preprod", "preview"]
-    env_file: ./.env
-    ports:
-      - 80:8080
-      - 443:8443
-    shm_size: '2gb'
-    volumes:
-      - ./config/haproxy:/usr/local/etc/haproxy
-      - /etc/ssl/ssl_key.pem:/ssl_key.pem
-    restart: on-failure
+  cardano-node-ogmios-preprod:
+    image: cardanosolutions/cardano-node-ogmios:v5.6.0_1.35.7-preprod
     logging:
       driver: "json-file"
       options:
-        max-size: "200k"
-        max-file: "10"
+        max-size: "400k"
+        max-file: "20"
+    ports:
+      - 127.0.0.1:1338:1337
+      - 3001:3000
+    restart: on-failure
+    volumes:
+      - node-db-preprod:/db
+      - node-ipc-preprod:/ipc
+    environment:
+      CARDANO_NODE_SOCKET_PATH: /ipc/node.socket
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
 
-include:
-  - docker-compose.mainnet.yml
-  - docker-compose.preprod.yml
-  - docker-compose.preview.yml
+  kupo-preprod:
+    depends_on:
+      - cardano-node-ogmios-preprod
+    image: cardanosolutions/kupo:v2.5.1
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "400k"
+        max-file: "20"
+    ports:
+      - 127.0.0.1:1443:1442
+    command: [
+      "--node-socket", "/ipc/node.socket",
+      "--node-config", "/config/cardano-node/config.json",
+      "--since", "${KUPO_SINCE_PREPROD:-origin}",
+      "--match", "${KUPO_MATCH_PREPROD_01:-*}",
+      "--match", "${KUPO_MATCH_PREPROD_02:-*}",
+      "--workdir", "/db",
+      "--host", "0.0.0.0",
+      "--port", "1442"
+    ]
+    volumes:
+      - kupo-db-preprod:/db
+      - node-ipc-preprod:/ipc
+      - ./config/cardano-configurations/network/preprod:/config
+
+  oura-preprod:
+    depends_on:
+      - cardano-node-ogmios-preprod
+    image: ghcr.io/txpipe/oura:v1.8.5
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "400k"
+        max-file: "20"
+    command: [
+      "daemon"
+    ]
+    volumes:
+      - node-ipc-preprod:/tmp
+      - ./daemon.toml:/etc/oura/daemon.toml
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+volumes:
+  node-db-preprod:
+  node-ipc-preprod:
+  kupo-db-preprod:
