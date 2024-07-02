@@ -37,6 +37,7 @@ services:
       "--since", "${KUPO_SINCE_PREPROD:-origin}",
       "--match", "${KUPO_MATCH_PREPROD_01:-*}",
       "--match", "${KUPO_MATCH_PREPROD_02:-*}",
+      "--match", "${KUPO_MATCH_PREPROD_03:-*}",
       "--workdir", "/db",
       "--host", "0.0.0.0",
       "--port", "1442"
